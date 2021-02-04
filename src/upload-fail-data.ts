@@ -62,7 +62,14 @@ const reshapeRecord = (record: IParsedRow): IPassFailDrop => {
 };
 
 (async () => {
-	const parser = fs.createReadStream('/Users/maxisom/Downloads/MTU FOIA Pass Fail 2010_2020.csv').pipe(parse({
+	const path = process.argv[2];
+
+	if (!fs.existsSync(path)) {
+		console.error('Path to spreadsheet is invalid or doesn\'t exist.');
+		process.exit(1);
+	}
+
+	const parser = fs.createReadStream(path).pipe(parse({
 		columns: [
 			'course',
 			'title',
