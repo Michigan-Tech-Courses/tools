@@ -11,8 +11,7 @@ interface IParsedRow {
 	course: string;
 	title: string;
 	termcode: string;
-	year: number;
-	semester: string;
+	crn: string;
 	section: string;
 	failed: number;
 	dropped: number;
@@ -24,6 +23,10 @@ const SEMESTER_MAPPING: Record<string, IPassFailDrop['semester']> = {
 	Winter: 'SPRING',
 	Spring: 'SPRING',
 	Summer: 'SUMMER'
+};
+
+const SEMESTER_MONTH_MAPPING: Record<string, IPassFailDrop['semester']> = {
+	'01': 'SPRING'
 };
 
 const getNRecords = async (parser: parse.Parser, n: number): Promise<IParsedRow[]> => {
@@ -49,11 +52,14 @@ const reshapeRecord = (record: IParsedRow): IPassFailDrop => {
 		throw new Error(`Could not parse ${JSON.stringify(record)}`);
 	}
 
+	const year = Number.parseInt(record.termcode.slice(0, 4), 10);
+	const semester = record.termcode.slice(4);
+
 	return {
 		courseSubject: subject[0],
 		courseCrse: crse[0],
-		year: record.year,
-		semester: SEMESTER_MAPPING[record.semester],
+		year,
+		semester: SEMESTER_MONTH_MAPPING[semester],
 		section: record.section,
 		failed: record.failed,
 		dropped: record.dropped,
@@ -74,16 +80,15 @@ const reshapeRecord = (record: IParsedRow): IPassFailDrop => {
 			'course',
 			'title',
 			'termcode',
-			'year',
-			'semester',
 			'section',
+			'crn',
+			'total',
 			'failed',
-			'dropped',
-			'total'
+			'dropped'
 		],
-		from: 2,
+		from: 1,
 		cast: (value, context) => {
-			if ([3, 6, 7, 8].includes(context.index)) {
+			if (['total', 'failed', 'dropped'].includes(context.column as string)) {
 				if (value.trim() === '') {
 					return 0;
 				}
