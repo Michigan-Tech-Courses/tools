@@ -18,7 +18,8 @@
     "lint:fix": "xo --fix",
     "clean": "rm -rf dist dts",
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "tools:upload-fail-data": "node ./dist/upload-fail-data.js"
   },
   "husky": {
     "hooks": {
@@ -36,7 +37,8 @@
     "csv-parse": "^4.15.1",
     "got": "^11.8.1",
     "ora": "^5.3.0",
-    "prompts": "^2.4.0"
+    "prompts": "^2.4.0",
+    "stream-transform": "^3.0.4"
   },
   "xo": {
     "rules": {
